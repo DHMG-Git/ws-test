@@ -1,6 +1,7 @@
 import WebSocket, {WebSocketServer} from 'ws';
 import MessageHelper from "../utils/Message-Helper.js";
 import Helper from "../utils/Helper.js";
+import {ServerConfig} from "../config/server-config.js";
 
 export default class Wss {
 
@@ -34,8 +35,8 @@ export default class Wss {
     constructor() {
 
         Wss.instance = new WebSocketServer({
-            port: 8080,
-            host: 'localhost',
+            port: ServerConfig.port,
+            host: ServerConfig.host,
             clientTracking: true
         });
 
@@ -43,7 +44,6 @@ export default class Wss {
         this.registerEventHandlers();
 
     }
-
 
     registerEventHandlers() {
         console.log('Registered Event handlers');
@@ -55,7 +55,6 @@ export default class Wss {
 
     wssOnConnection(ws) {
         console.log('New Client Connected');
-        console.log(`Current Connected Clients: ${Wss.instance.clients.size}`)
         ws.on('message', (data, isBinary) => {
             this.handleMessage(data, isBinary, ws);
         });
