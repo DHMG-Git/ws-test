@@ -1,0 +1,26 @@
+{
+  "name": "wbt-notification-server",
+  "version": "1.0.0",
+  "description": "Websocket Server to handle Notifications from Device Handler and Native Apps",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reiter-work/notification-handler.git"
+  },
+  "author": "Johannes Reiter | reiter.work",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reiter-work/notification-handler/issues"
+  },
+  "homepage": "https://github.com/reiter-work/notification-handler#readme",
+  "dependencies": {
+    "axios": "^1.2.0",
+    "uuid": "^9.0.0",
+    "ws": "^8.11.0"
+  }
+}
+
