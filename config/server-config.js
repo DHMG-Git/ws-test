@@ -1,5 +1,4 @@
 export const ServerConfig = {
-
         isSecure: true,
         host: 'reitter.it-wolf.at',
         port: 3666,
