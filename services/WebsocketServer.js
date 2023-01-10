@@ -1,5 +1,6 @@
 import WebSocket, {WebSocketServer} from 'ws';
 import MessageHelper from "../utils/Message-Helper.js";
+import Helper from "../utils/Helper.js";
 
 export default class Wss {
 
@@ -14,7 +15,7 @@ export default class Wss {
     }
 
     static addToClientList(client, type) {
-        if(type === 'device_handler') {
+        if (type === 'device_handler') {
             Wss.deviceHandlerClients.push(client);
         }
     }
@@ -54,36 +55,32 @@ export default class Wss {
 
     wssOnConnection(ws) {
         console.log('New Client Connected');
+        console.log(`Current Connected Clients: ${Wss.instance.clients.size}`)
         ws.on('message', (data, isBinary) => {
             this.handleMessage(data, isBinary, ws);
         });
     }
 
     handleMessage(data, isBinary, ws) {
-        if(isBinary) {
+        if (isBinary) {
             throw new Error('got Binary Data, pleas implement the handling');
         }
         const message = data.toString();
         this.messageHelper.updateMessage(message);
-        switch (this.messageHelper.cmd) {
-            case 'userEntry':
-                const openMessage = this.messageHelper.createMessage('user_entry');
-                Wss.notifyDeviceHandler(JSON.stringify(openMessage));
-                break;
-            case 'WhoIAm':
-                Wss.addToClientList(ws, this.messageHelper.clientType)
+        if (Helper.validateToken(this.messageHelper.token)) {
 
+            switch (this.messageHelper.cmd) {
+                case 'userEntry':
+                    const openMessage = this.messageHelper.createMessage('user_entry');
+                    Wss.notifyDeviceHandler(JSON.stringify(openMessage));
+                    break;
+                case 'WhoIAm':
+                    Wss.addToClientList(ws, this.messageHelper.clientType)
+
+            }
+        } else {
+            console.log('401');
         }
-
-        //todo implement token check
-        // if(Helper.validateToken(message.token)) {
-        //
-        //
-        // } else {
-        //     throw new Error('Authentication Failed');
-        // }
-
-
 
 
     }

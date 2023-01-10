@@ -30,17 +30,23 @@ export default class MessageHelper {
         const data = JSON.parse(message);
 
         if(data.payload) {
+            this._token = data.token;
             this._message = data.payload;
         }
 
         if(data.Cmd) {
             this._message = JSON.parse(message);
+            this._token = this.message.Data.token;
         }
 
     }
 
     get message() {
         return this._message;
+    }
+
+    get token() {
+        return this._token;
     }
 
     get clientType() {

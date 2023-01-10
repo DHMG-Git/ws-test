@@ -1,5 +1,4 @@
 import {ApiConfig} from "../config/api-config.js";
-import ApiService from "../services/ApiService.js";
 
 export default class Helper {
 
@@ -11,10 +10,6 @@ export default class Helper {
     }
 
     static validateToken(token) {
-
-        console.log({token})
-        console.log(ApiConfig.token)
-
         return token === ApiConfig.token;
     }
 
