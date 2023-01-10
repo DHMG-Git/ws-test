@@ -1,4 +1,6 @@
 import WebSocket, {WebSocketServer} from 'ws';
+import fs from 'fs';
+import https from 'https';
 import MessageHelper from "../utils/Message-Helper.js";
 import Helper from "../utils/Helper.js";
 import {ServerConfig} from "../config/server-config.js";
@@ -34,12 +36,23 @@ export default class Wss {
 
     constructor() {
 
+        import { createServer } from 'https';
+        import { readFileSync } from 'fs';
+        import { WebSocketServer } from 'ws';
+
+        const server = createServer({
+            cert: readFileSync('/path/to/cert.pem'),
+            key: readFileSync('/path/to/key.pem')
+        });
         Wss.instance = new WebSocketServer({
             port: ServerConfig.port,
             host: ServerConfig.host,
+            server: server,
             clientTracking: true
         });
 
+        server.listen(3666)
+        
         this.messageHelper = new MessageHelper({});
         this.registerEventHandlers();
 
