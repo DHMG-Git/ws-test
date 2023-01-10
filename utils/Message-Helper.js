@@ -10,6 +10,7 @@ export default class MessageHelper {
         UNLOCK_PERMANENT: "App.StartUnlockProcess",
         SET_APPSTATE: "App.SetAppState",
         DENY_ENTRY: "App.StartDenyProcess",
+        USER_ENTRY: "userEntry",
     });
 
     static method = Object.freeze({
@@ -25,36 +26,56 @@ export default class MessageHelper {
 
 
     updateMessage(message) {
-        this._message = JSON.parse(message.data);
+
+        const data = JSON.parse(message);
+
+        if(data.payload) {
+            this._message = data.payload;
+        }
+
+        if(data.Cmd) {
+            this._message = JSON.parse(message);
+        }
+
     }
 
     get message() {
         return this._message;
     }
 
-    get cmd() {
-        return this.message.Cmd;
+    get clientType() {
+
+        if( this.message.Data.device) {
+            return this.message.Data.device;
+        } else {
+            return 'native_app';
+        }
     }
 
-    get data() {
-        if (this.message.Data) {
-            return this.message.Data;
+    get cmd() {
+
+        if(this.message.cmd) {
+            return this.message.cmd;
         }
+
+        if(this.message.Cmd) {
+            return this.message.Cmd;
+        }
+
         return null;
     }
 
-    get accessToken() {
-        return this.message.Data.AccessToken;
+    get location() {
+        return this.message.location;
     }
 
-    get CardUid() {
-        return this.message.Data.UID;
+    get device_type() {
+        return this.message.device_type;
     }
 
-    get gid() {
-        return this.message.GID;
+    get user() {
+        return this.message.user;
     }
-
 
     createMessage(type, payload) {
 
@@ -115,7 +136,15 @@ export default class MessageHelper {
                     "Device": "INTERNAL"
                 };
                 break;
-
+            case 'user_entry':
+                cmd = MessageHelper.command.USER_ENTRY;
+                mt = MessageHelper.method.REQUEST;
+                data = {
+                    "location": this.location,
+                    "device_type": this.device_type,
+                    "user": this.user,
+                };
+                break;
             default:
                 console.error('Unknown Message Type');
         }
