@@ -1,6 +1,4 @@
 import WebSocket, {WebSocketServer} from 'ws';
-import { createServer } from 'http';
-import { readFileSync } from 'fs';
 import MessageHelper from "../utils/Message-Helper.js";
 import Helper from "../utils/Helper.js";
 import {ServerConfig} from "../config/server-config.js";
@@ -36,11 +34,9 @@ export default class Wss {
 
     constructor() {
 
-        const server = createServer({
-
-        });
         Wss.instance = new WebSocketServer({
-            server: server,
+            port: ServerConfig.port,
+            host: ServerConfig.host,
             clientTracking: true
         });
 
