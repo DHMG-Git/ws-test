@@ -40,6 +40,8 @@ export default class Wss {
             clientTracking: true
         });
 
+        console.log(`Server up and running. Listening at Port ${ServerConfig.port}`)
+
         this.messageHelper = new MessageHelper({});
         this.registerEventHandlers();
 
