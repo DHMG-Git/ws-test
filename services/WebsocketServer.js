@@ -36,10 +36,7 @@ export default class Wss {
 
     constructor() {
 
-        const server = createServer({
-            cert: readFileSync('/path/to/cert.pem'),
-            key: readFileSync('/path/to/key.pem')
-        });
+        const server = createServer();
         Wss.instance = new WebSocketServer({
             port: ServerConfig.port,
             host: ServerConfig.host,
