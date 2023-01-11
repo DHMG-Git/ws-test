@@ -35,6 +35,8 @@ export default class MessageHelper {
         }
 
         if(data.Cmd === MessageHelper.command.HEARTBEAT) {
+            this._token = null;
+            this._message = JSON.parse(message);
             return;
         }
 

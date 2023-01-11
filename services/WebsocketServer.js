@@ -69,18 +69,19 @@ export default class Wss {
         const message = data.toString();
         this.messageHelper.updateMessage(message);
         if (Helper.validateToken(this.messageHelper.token)) {
-
             switch (this.messageHelper.cmd) {
                 case 'userEntry':
                     const openMessage = this.messageHelper.createMessage('user_entry');
                     Wss.notifyDeviceHandler(JSON.stringify(openMessage));
                     break;
                 case 'WhoIAm':
-                    Wss.addToClientList(ws, this.messageHelper.clientType)
-
+                    Wss.addToClientList(ws, this.messageHelper.clientType);
+                    break;
             }
         } else {
-            console.log('401');
+            if(this.messageHelper.cmd !== 'Heartbeat') {
+                console.log('401 - Missing Token in Request');
+            }
         }
 
 
