@@ -44,7 +44,7 @@ export default class Wss {
             clientTracking: true
         });
 
-        server.listen(3666)
+        server.listen(8080)
 
         this.messageHelper = new MessageHelper({});
         this.registerEventHandlers();
