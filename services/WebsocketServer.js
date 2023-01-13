@@ -6,6 +6,7 @@ import {ServerConfig} from "../config/server-config.js";
 export default class Wss {
 
     static instance = null;
+    static displayClients = null;
 
     static makeInstance() {
         if (Wss.instance === null) {
@@ -20,14 +21,23 @@ export default class Wss {
             Wss.deviceHandlerClients.push(client);
             console.log(this.deviceHandlerClients.length);
         }
+        if (type === 'display') {
+            Wss.displayClients.push(client);
+        }
     }
 
     static notifyDeviceHandler(jsonMessage) {
         Wss.deviceHandlerClients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                console.log('SEND!!!!');
-                console.log(jsonMessage);
                 client.send(jsonMessage);
+            }
+        });
+    }
+
+    static notifyDisplays() {
+        Wss.displayClients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send('update!');
             }
         });
     }
@@ -80,6 +90,9 @@ export default class Wss {
                     break;
                 case 'WhoIAm':
                     Wss.addToClientList(ws, this.messageHelper.clientType);
+                    break;
+                case 'new_check_in':
+                    Wss.notifyDisplays();
                     break;
             }
         } else {
