@@ -67,6 +67,7 @@ export default class Wss {
             throw new Error('got Binary Data, pleas implement the handling');
         }
         const message = data.toString();
+        console.log(message);
         this.messageHelper.updateMessage(message);
         if (Helper.validateToken(this.messageHelper.token)) {
             switch (this.messageHelper.cmd) {
