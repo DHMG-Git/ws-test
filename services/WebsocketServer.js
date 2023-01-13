@@ -25,6 +25,8 @@ export default class Wss {
     static notifyDeviceHandler(jsonMessage) {
         Wss.deviceHandlerClients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
+                console.log('SEND!!!!');
+                console.log(jsonMessage);
                 client.send(jsonMessage);
             }
         });
