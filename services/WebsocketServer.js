@@ -18,6 +18,7 @@ export default class Wss {
     static addToClientList(client, type) {
         if (type === 'device_handler') {
             Wss.deviceHandlerClients.push(client);
+            console.log(this.deviceHandlerClients.length);
         }
     }
 
@@ -72,7 +73,6 @@ export default class Wss {
         if (Helper.validateToken(this.messageHelper.token)) {
             switch (this.messageHelper.cmd) {
                 case 'userEntry':
-                    console.log('here');
                     const openMessage = this.messageHelper.createMessage('user_entry');
                     Wss.notifyDeviceHandler(JSON.stringify(openMessage));
                     break;
