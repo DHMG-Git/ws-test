@@ -6,7 +6,7 @@ import {ServerConfig} from "../config/server-config.js";
 export default class Wss {
 
     static instance = null;
-    static displayClients = null;
+    static displayClients = [];
 
     static makeInstance() {
         if (Wss.instance === null) {
