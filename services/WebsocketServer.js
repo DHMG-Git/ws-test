@@ -2,6 +2,7 @@ import WebSocket, {WebSocketServer} from 'ws';
 import MessageHelper from "../utils/Message-Helper.js";
 import Helper from "../utils/Helper.js";
 import {ServerConfig} from "../config/server-config.js";
+import {ApiConfig} from "../config/api-config.js";
 
 export default class Wss {
 
@@ -16,13 +17,17 @@ export default class Wss {
         }
     }
 
-    static addToClientList(client, type) {
+    static addToClientList(client, type, location) {
         if (type === 'device_handler') {
             Wss.deviceHandlerClients.push(client);
-            console.log(this.deviceHandlerClients.length);
         }
         if (type === 'display') {
-            Wss.displayClients.push(client);
+            if(Wss.displayClients[location]) {
+                Wss.displayClients[location].push(client);
+            } else {
+                Wss.displayClients[location] = [];
+                Wss.displayClients[location].push(client);
+            }
         }
     }
 
@@ -34,12 +39,24 @@ export default class Wss {
         });
     }
 
-    static notifyDisplays() {
-        Wss.displayClients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send('update!');
-            }
-        });
+    static notifyDisplays(location) {
+        if(Wss.displayClients[location]) {
+            Wss.displayClients[location].forEach(function each(client) {
+                if (client.readyState === WebSocket.OPEN) {
+
+                    const updateObject = {
+                        token: ApiConfig.token,
+                        payload: {
+                            location: location
+                        }
+                    }
+
+                    client.send(JSON.stringify(updateObject));
+                }
+            });
+        }
+
+
     }
 
     // we save the declared devicehandlers, to push EventMessages on Loginevents.
@@ -80,7 +97,6 @@ export default class Wss {
             throw new Error('got Binary Data, pleas implement the handling');
         }
         const message = data.toString();
-        console.log(message);
         this.messageHelper.updateMessage(message);
         if (Helper.validateToken(this.messageHelper.token)) {
             switch (this.messageHelper.cmd) {
@@ -89,10 +105,10 @@ export default class Wss {
                     Wss.notifyDeviceHandler(JSON.stringify(openMessage));
                     break;
                 case 'WhoIAm':
-                    Wss.addToClientList(ws, this.messageHelper.clientType);
+                    Wss.addToClientList(ws, this.messageHelper.clientType, this.messageHelper.location);
                     break;
                 case 'new_check_in':
-                    Wss.notifyDisplays();
+                    Wss.notifyDisplays(this.messageHelper.location);
                     break;
             }
         } else {

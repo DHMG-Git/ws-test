@@ -78,7 +78,16 @@ export default class MessageHelper {
     }
 
     get location() {
-        return this.message.location;
+
+        if(this.message.location) {
+            return this.message.location;
+        }
+
+        if(this.message.Data.location) {
+            return this.message.Data.location;
+        }
+
+        return null;
     }
 
     get device_type() {
@@ -154,7 +163,7 @@ export default class MessageHelper {
                 data = {
                     "location": this.location,
                     "device_type": this.device_type,
-                    "user": this.user,
+                    "user": this.user.trim(),
                 };
                 break;
             default:
