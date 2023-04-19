@@ -11,6 +11,7 @@ export default class MessageHelper {
         SET_APPSTATE: "App.SetAppState",
         DENY_ENTRY: "App.StartDenyProcess",
         USER_ENTRY: "userEntry",
+        NOTIFY_APP: "notifyApp"
     });
 
     static method = Object.freeze({
@@ -28,6 +29,10 @@ export default class MessageHelper {
     updateMessage(message) {
 
         const data = JSON.parse(message);
+        this._clientId = data.clientId;
+
+        console.log(data);
+
 
         if(data.payload) {
             this._token = data.token;
@@ -41,10 +46,21 @@ export default class MessageHelper {
         }
 
         if(data.Cmd) {
-            this._message = JSON.parse(message);
-            this._token = this.message.Data.token;
+
+            if(data.Cmd === MessageHelper.command.NOTIFY_APP) {
+                this._message = data;
+                this._token = data.token;
+                this._clientId = data.payload.clientId;
+            } else {
+                this._message = JSON.parse(message);
+                this._token = this.message.Data.token;
+            }
         }
 
+    }
+
+    get appResponseMessage() {
+        return JSON.stringify(this.message);
     }
 
     get message() {
@@ -53,6 +69,10 @@ export default class MessageHelper {
 
     get token() {
         return this._token;
+    }
+
+    get clientId() {
+        return this._clientId;
     }
 
     get clientType() {
@@ -98,7 +118,7 @@ export default class MessageHelper {
         return this.message.user;
     }
 
-    createMessage(type, payload) {
+    createMessage(type, payload, clientId) {
 
         let cmd;
         let mt;
@@ -173,6 +193,7 @@ export default class MessageHelper {
         let MessageObject = {};
         MessageObject.Cmd = cmd;
         MessageObject.MT = mt;
+        MessageObject.clientId = clientId;
         MessageObject.GID = this.deviceConfig.gid;
         data ? MessageObject.Data = data : '';
 

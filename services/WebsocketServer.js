@@ -3,6 +3,8 @@ import MessageHelper from "../utils/Message-Helper.js";
 import Helper from "../utils/Helper.js";
 import {ServerConfig} from "../config/server-config.js";
 import {ApiConfig} from "../config/api-config.js";
+import {v4 as uuid} from 'uuid';
+
 
 export default class Wss {
 
@@ -88,8 +90,13 @@ export default class Wss {
     wssOnConnection(ws) {
         console.log('New Client Connected');
         ws.on('message', (data, isBinary) => {
+            this.createUniqueIdForClient(ws);
             this.handleMessage(data, isBinary, ws);
         });
+    }
+
+    createUniqueIdForClient(ws) {
+        ws.clientId = uuid();
     }
 
     handleMessage(data, isBinary, ws) {
@@ -97,11 +104,13 @@ export default class Wss {
             throw new Error('got Binary Data, pleas implement the handling');
         }
         const message = data.toString();
+
         this.messageHelper.updateMessage(message);
+
         if (Helper.validateToken(this.messageHelper.token)) {
             switch (this.messageHelper.cmd) {
                 case 'userEntry':
-                    const openMessage = this.messageHelper.createMessage('user_entry');
+                    const openMessage = this.messageHelper.createMessage('user_entry', null, ws.clientId);
                     Wss.notifyDeviceHandler(JSON.stringify(openMessage));
                     break;
                 case 'WhoIAm':
@@ -110,6 +119,8 @@ export default class Wss {
                 case 'new_check_in':
                     Wss.notifyDisplays(this.messageHelper.location);
                     break;
+                case 'notifyApp':
+                    this.notifyClient();
             }
         } else {
             if(this.messageHelper.cmd !== 'Heartbeat') {
@@ -118,6 +129,15 @@ export default class Wss {
         }
 
 
+    }
+
+    notifyClient() {
+
+        Wss.instance.clients.forEach( client => {
+           if(client.clientId === this.messageHelper.clientId) {
+               client.send(this.messageHelper.appResponseMessage);
+           }
+        })
     }
 
     wsOnOpen(e) {
