@@ -53,7 +53,7 @@ export default class MessageHelper {
                 this._clientId = data.payload.clientId;
             } else {
                 this._message = JSON.parse(message);
-                this._token = this.message.Data.token;
+                this._token = this.message.Data.token ?? null;
             }
         }
 
