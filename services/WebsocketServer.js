@@ -105,6 +105,8 @@ export default class Wss {
         }
         const message = data.toString();
 
+        console.log(message);
+
         this.messageHelper.updateMessage(message);
 
         if (Helper.validateToken(this.messageHelper.token)) {
