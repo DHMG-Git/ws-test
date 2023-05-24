@@ -105,14 +105,13 @@ export default class Wss {
         }
         const message = data.toString();
 
-        console.log(message);
-
         this.messageHelper.updateMessage(message);
 
         if (Helper.validateToken(this.messageHelper.token)) {
             switch (this.messageHelper.cmd) {
                 case 'userEntry':
                     const openMessage = this.messageHelper.createMessage('user_entry', null, ws.clientId);
+                    console.log(openMessage);
                     Wss.notifyDeviceHandler(JSON.stringify(openMessage));
                     break;
                 case 'WhoIAm':
